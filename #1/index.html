@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画像カルーセル</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .carousel-container {
+      width: 100%;
+      margin: 20px auto;
+      position: relative;
+    }
+
+    .carousel {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 2 / 1; /* 変更可能: カルーセルのアスペクト比 */
+      max-height: 500px;
+    }
+
+    @supports not (aspect-ratio: 2 / 1) {
+      .carousel {
+        height: 0;
+        padding-bottom: 50%;
+      }
+    }
+
+    .carousel-slides {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+      display: none;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      z-index: 2;
+      display: block;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      z-index: 3;
+    }
+
+    .carousel-indicator {
+      width: 60px; /* 変更可能: サムネイルのサイズ */
+      height: 40px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s, border 0.3s;
+      display: block;
+    }
+
+    .carousel-indicator:hover {
+      opacity: 1;
+    }
+
+    .carousel-indicator.active {
+      opacity: 1;
+      border: 3px solid #333;
+    }
+
+    .carousel-indicator img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      display: block;
+    }
+
+    /* モバイル対応 */
+    @media (max-width: 600px) {
+      .carousel-indicator {
+        width: 40px;
+        height: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="carousel-container">
+    <div class="carousel">
+      <div class="carousel-slides">
+        <!-- スライドはJavaScriptで動的に生成 -->
+      </div>
+    </div>
+    <div class="carousel-indicators">
+      <!-- インジケーターはJavaScriptで動的に生成 -->
+    </div>
+  </div>
+
+  <script>
+    // 画像URLの配列（ここを編集して画像を追加/変更）
+    const images = [
+      'https://picsum.photos/800/400?random=1',
+      'https://picsum.photos/800/400?random=2',
+      'https://picsum.photos/800/400?random=3',
+      'https://picsum.photos/800/400?random=4'
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const slidesContainer = document.querySelector('.carousel-slides');
+      const indicatorsContainer = document.querySelector('.carousel-indicators');
+
+      // スライドとインジケーターを動的に生成
+      images.forEach((imageUrl, index) => {
+        // スライドを生成
+        const slide = document.createElement('div');
+        slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+        slide.setAttribute('data-index', index);
+        slide.innerHTML = `<img src="${imageUrl}" alt="画像${index + 1}">`;
+        slidesContainer.appendChild(slide);
+
+        // インジケーターを生成
+        const indicator = document.createElement('div');
+        indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
+        indicator.setAttribute('data-index', index);
+        indicator.innerHTML = `<img src="${imageUrl}" alt="サムネイル${index + 1}">`;
+        indicatorsContainer.appendChild(indicator);
+      });
+
+      const slides = document.querySelectorAll('.carousel-slide');
+      const indicators = document.querySelectorAll('.carousel-indicator');
+
+      // スライド表示関数
+      function showSlide(index) {
+        slides.forEach(slide => {
+          slide.classList.remove('active');
+          slide.style.display = 'none';
+        });
+        indicators.forEach(indicator => {
+          indicator.classList.remove('active');
+        });
+
+        slides[index].style.display = 'block';
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+      }
+
+      // インジケーターのクリックイベント
+      indicators.forEach(indicator => {
+        indicator.addEventListener('click', () => {
+          const index = parseInt(indicator.getAttribute('data-index'));
+          showSlide(index);
+        });
+      });
+
+      // 初期表示
+      showSlide(0);
+    });
+  </script>
+</body>
+</html>
